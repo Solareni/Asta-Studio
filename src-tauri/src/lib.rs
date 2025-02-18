@@ -1,8 +1,3 @@
-use cocoa::appkit::{NSButton, NSColor, NSTextField, NSView, NSWindow};
-use cocoa::base::{id, nil, NO, YES};
-use cocoa::foundation::NSRect;
-use cocoa::foundation::{NSPoint, NSSize, NSString};
-use tauri::{TitleBarStyle, WebviewUrl, WebviewWindowBuilder};
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
 fn greet(name: &str) -> String {

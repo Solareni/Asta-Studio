@@ -31,13 +31,13 @@ Here are some mathematical equations:
 		content: `The quadratic formula $x = \\frac{-b \\pm \\sqrt{b^2 - 4ac}}{2a}$ is used to solve quadratic equations in the form $ax^2 + bx + c = 0$
 
 Let's break it down:
-1. $a$ is the coefficient of $x^2$
+1. $a^2$ is the coefficient of $x^2$
 2. $b$ is the coefficient of $x$
 3. $c$ is the constant term
 
 ### Code Example
 
-The $\\pm$ symbol means you'll get two solutions:
+The $\pm$ symbol means you'll get two solutions:
 - One using the plus sign: $x = \\frac{-b + \\sqrt{b^2 - 4ac}}{2a}$
 - One using the minus sign: $x = \\frac{-b - \\sqrt{b^2 - 4ac}}{2a}$`
 	},
