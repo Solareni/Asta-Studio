@@ -2,10 +2,8 @@ import { useEffect, useRef, useState } from "react";
 import { useDynamicHeight } from "../hooks/useDynamicHeight";
 import { VirtualList } from "./shared/VirtualList";
 import { messages } from "../mock";
-interface ChatItem {
-	role: string;
-	content: string;
-}
+import { ChatItem } from "./types";
+import Markdown from "./Markdown";
 const renderChatItem = ({
     index,
     style,
@@ -30,7 +28,7 @@ const renderChatItem = ({
             <div className="font-bold mb-2">
                 {message.role === "assistant" ? "AI" : "You"}
             </div>
-            <div className="font-normal mb-3">{message.content}</div>
+            <Markdown message={message} />
         </div>
     );
 };
@@ -39,7 +37,7 @@ const ChatPage = () => {
 	const [inputMessage, setInputMessage] = useState("");
 
 	useEffect(() => {
-		setChatHistory(messages);
+		setChatHistory(messages as ChatItem[]);
 	}, []);
 
 	const handleSendMessage = () => {
