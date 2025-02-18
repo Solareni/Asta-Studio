@@ -1,23 +1,12 @@
 import { createBrowserRouter } from "react-router-dom";
 import Layout from "./Layout";
 import ChatPage from "./components/ChatPage";
-
-
-
-const AudioPage = () => {
-	return <div>AudioPage</div>;
-};
-
-const LibraryPage = () => {
-	return <div>LibraryPage</div>;
-};
+import SettingsPage from "./components/Settings";
+import AudioPage from "./components/AudioPage";
+import LibraryPage from "./components/LibraryPage";
 
 const UserPage = () => {
 	return <div>UserPage</div>;
-};
-
-const SettingsPage = () => {
-	return <div>SettingsPage</div>;
 };
 
 const router = createBrowserRouter([

@@ -54,7 +54,7 @@ function Layout() {
 				</div>
 
 				{/* 主要内容区域 */}
-				<div className="flex-1 p-6 bg-white dark:bg-gray-800">
+				<div className="flex-1 bg-white dark:bg-gray-800">
 					<Outlet />
 				</div>
 			</div>
