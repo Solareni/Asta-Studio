@@ -2,8 +2,11 @@ use std::ffi::c_void;
 
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use tauri::{TitleBarStyle, WebviewUrl, WebviewWindowBuilder};
+use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri::{async_runtime::Mutex, AppHandle, Emitter, Manager};
+
+#[cfg(target_os = "macos")]
+use tauri::TitleBarStyle;
 
 // Learn more about Tauri commands at https://tauri.app/develop/calling-rust/
 #[tauri::command]
@@ -32,7 +35,7 @@ pub fn run() {
             {
                 let app = app.handle().clone();
                 let win_builder = WebviewWindowBuilder::new(&app, "main", WebviewUrl::default())
-                    .title("Transparent Titlebar Window")
+                    .title("")
                     .min_inner_size(800.0, 600.0)
                     .inner_size(800.0, 600.0);
 
