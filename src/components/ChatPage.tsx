@@ -37,31 +37,10 @@ const renderChatItem = ({
 };
 const ChatPage = () => {
   const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
-  const [inputMessage, setInputMessage] = useState("");
 
   useEffect(() => {
     setChatHistory(messages as ChatItem[]);
   }, []);
-
-  const handleSendMessage = () => {
-    if (!inputMessage.trim()) return;
-
-    const newMessage: ChatItem = {
-      role: "user",
-      content: inputMessage.trim(),
-      status: "done"
-    };
-
-    setChatHistory((prev) => [...prev, newMessage]);
-    setInputMessage("");
-  };
-
-  const handleKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      handleSendMessage();
-    }
-  };
 
   return (
     <div className="flex flex-col relative w-full h-screen p-2">
@@ -72,15 +51,26 @@ const ChatPage = () => {
           rowRenderer={renderChatItem}
         />
       </div>
-      <div className="h-24 min-h-[96px]">
+      <div className="h-24 min-h-[96px] relative">
         <textarea
-          value={inputMessage}
-          onChange={(e) => setInputMessage(e.target.value)}
-          onKeyDown={handleKeyPress}
           placeholder="Type your message..."
-          className="w-full h-full resize-none rounded-lg border border-gray-300 dark:border-gray-600 p-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200"
-          rows={4}
+          className="w-full h-full resize-none rounded-lg border border-gray-300 dark:border-gray-600 p-2 pb-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200"
+          rows={3}
         />
+        <div className="absolute bottom-2 left-2 flex gap-2">
+          <button
+            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            title="Search"
+          >
+            <LuSearch className="w-5 h-5" />
+          </button>
+          <button
+            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            title="Suggestions"
+          >
+            <LuLightbulb className="w-5 h-5" />
+          </button>
+        </div>
       </div>
     </div>
   );
