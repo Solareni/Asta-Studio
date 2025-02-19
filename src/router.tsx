@@ -15,11 +15,14 @@ const router = createBrowserRouter([
 		element: <Layout />,
 		children: [
 			{ index: true, element: <ChatPage /> },
-
 			{
-				path: "chat_page",
-				element: <ChatPage />,
-			},
+                path: "chat/:id?",
+                element: <ChatPage />,
+            },
+            {
+                path: "chat/:id",
+                element: <ChatPage />,
+            },
 			{
 				path: "audio",
 				element: <AudioPage />,

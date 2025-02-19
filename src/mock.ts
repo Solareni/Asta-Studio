@@ -1,3 +1,30 @@
+
+// 模拟聊天数据
+const items = [
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "1" },
+	{
+		title:
+			"Tailwind Classedddddddddddddddddsddddddddddd fdagfdshfa fdsagfdsg",
+		date: "12 Mar",
+		id: "2",
+	},
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "3" },
+	{
+		title: "explain quantum computing",
+		date: "10 Feb",
+		isActive: true,
+		id: "4",
+	},
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "5" },
+	{ title: "How to create ERP Diagram", date: "22 Jan", id: "6" },
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "7" },
+	{ title: "API Scaling Strategies", date: "1 Jan", id: "8" },
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "9" },
+	{ title: "What is GPT UI?", date: "1 Jan", id: "10" },
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "11" },
+	{ title: "How to use Tailwind components?", date: "1 Jan", id: "12" },
+];
+
 // 根据id获取chathistory
 // 示例消息数据
 const messages = [
@@ -63,4 +90,4 @@ Unlike bits, qubits can represent not only a 0 or a 1 but also a superposition o
 
 ];
 
-export { messages };
+export { messages, items };
