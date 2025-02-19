@@ -2,6 +2,8 @@ import { useState, useEffect } from "react";
 import { useTheme } from "./ThemeContext";
 import { VirtualList } from "./components/shared/VirtualList";
 import { useDynamicHeight } from "./hooks/useDynamicHeight";
+import { listen } from "@tauri-apps/api/event";
+
 import {
 	LuAtom,
 	LuSun,
@@ -10,7 +12,7 @@ import {
 	LuSettings,
 	LuAudioLines,
 	LuMessageCircleMore,
-	LuLibraryBig,
+	LuImage,
 	LuCirclePlus,
 } from "react-icons/lu";
 import { Link, NavLink, Outlet } from "react-router-dom";
@@ -21,6 +23,7 @@ interface ChatItem {
 	title: string;
 	date: string;
 	id: string;
+	type: "chat" | "audio" | "image";
 }
 const ChatRow = ({
 	index,
@@ -36,6 +39,19 @@ const ChatRow = ({
 }) => {
 	const item = data.items[index];
 	const rowRef = useDynamicHeight<HTMLAnchorElement>(index, data, item);
+
+	const getTypeIcon = () => {
+		switch (item.type) {
+			case "audio":
+				return <LuAudioLines className="w-5 h-5 text-blue-500" />;
+			case "image":
+				return <LuImage className="w-5 h-5 text-blue-500" />;
+			case "chat":
+			default:
+				return <LuMessageCircleMore className="w-5 h-5 text-blue-500" />;
+		}
+	};
+
 	return (
 		<NavLink
 			ref={rowRef}
@@ -44,17 +60,20 @@ const ChatRow = ({
 			style={{ ...style, height: "auto" }}
 			className={({
 				isActive,
-			}) => `flex w-full flex-col gap-y-2 rounded-lg px-3 py-2 text-left transition-colors duration-200 focus:outline-none
+			}) => `flex w-full items-center gap-2 rounded-[20px] px-2 py-3 text-left transition-colors duration-200 
 					${
 						isActive
-							? "bg-slate-200 dark:bg-slate-800"
-							: "hover:bg-slate-200 dark:hover:bg-slate-800"
+							? "bg-slate-200/90 text-slate-900 dark:bg-slate-700/90 dark:text-white"
+							: "hover:bg-slate-100 dark:hover:bg-slate-800/70"
 					}`}
 		>
-			<h1 className="text-sm font-medium capitalize text-slate-700 dark:text-slate-200 truncate">
+			<div className="flex-none">
+				{getTypeIcon()}
+			</div>
+
+			<h1 className="text-sm font-medium capitalize truncate text-gray-900 dark:text-white flex-1">
 				{item.title}
 			</h1>
-			<p className="text-xs text-slate-500 dark:text-slate-400">{item.date}</p>
 		</NavLink>
 	);
 };
@@ -66,11 +85,11 @@ const Siderbar = () => {
 
 	useEffect(() => {
 		// 从本地存储中获取聊天历史记录
-		setChatHistory(items);
+		setChatHistory(items as ChatItem[]);
 	}, []);
 
 	return (
-		<div className="w-36 bg-white dark:bg-gray-800 flex flex-col h-screen py-4 shadow-md">
+		<div className="w-48 bg-white dark:bg-gray-800 flex flex-col h-screen py-4 shadow-md">
 			{/* 固定顶部区域 */}
 			<div className="flex flex-col flex-none">
 				{/* 项目标志 */}
@@ -125,11 +144,31 @@ const Siderbar = () => {
 
 function Layout() {
 	const { theme } = useTheme();
+
+
+	const [sidebarVisible, setSidebarVisible] = useState(true);
+
+	useEffect(() => {
+		const unsubscribe = listen<string>("emit_event", (event) => {
+			const payload = JSON.parse(event.payload);
+			switch (payload.type) {
+				case "sidebar_control":
+					setSidebarVisible(prev => !prev);
+					break;
+				default:
+					break;
+			}
+		});
+
+		return () => {
+			unsubscribe.then((unlisten) => unlisten());
+		};
+	}, []);
 	return (
 		<div className={theme === "light" ? "" : "dark"}>
 			<div className="flex bg-gray-100 dark:bg-gray-900 min-h-screen">
 				{/* 侧边栏 */}
-				<Siderbar />
+				{sidebarVisible && <Siderbar />}
 
 				{/* 主要内容区域 */}
 				<div className="flex-1 bg-white dark:bg-gray-800">

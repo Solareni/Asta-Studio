@@ -2,7 +2,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif // __cplusplus
-void do_something();
+void do_something(int tag);
 #ifdef __cplusplus
 }  // extern "C"
 #endif  // __cplusplus
@@ -14,8 +14,8 @@ void do_something();
 @end
 
 @implementation TitleBarHelper
-- (void)buttonClicked:(id)sender {
-  do_something();
+- (void)buttonClicked:(NSButton *)sender {
+  do_something(sender.tag);
 }
 @end
 
@@ -28,14 +28,15 @@ void init_title(void *ns_window) {
   // 获取标题栏视图
   NSTitlebarAccessoryViewController *leftAccessoryViewController =
       [[NSTitlebarAccessoryViewController alloc] init];
-  NSView *leftAccessoryView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 60, 24)];
+  NSView *leftAccessoryView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 60, 28)];
 
   // 创建左侧按钮
-  NSButton *leftButton = [[NSButton alloc] initWithFrame:NSMakeRect(8, 0, 24, 24)];
+  NSButton *leftButton = [[NSButton alloc] initWithFrame:NSMakeRect(8, 2, 24, 24)];
   [leftButton setImage:[NSImage imageWithSystemSymbolName:@"sidebar.left"
                                  accessibilityDescription:nil]];
   [leftButton setBezelStyle:NSBezelStyleRegularSquare];
   [leftButton setBordered:NO];
+  [leftButton setTag:0];
   [leftButton setTarget:delegate];
   [leftButton setAction:@selector(buttonClicked:)];
   [leftAccessoryView addSubview:leftButton];
@@ -47,13 +48,14 @@ void init_title(void *ns_window) {
   // 创建右侧按钮
   NSTitlebarAccessoryViewController *rightAccessoryViewController =
       [[NSTitlebarAccessoryViewController alloc] init];
-  NSView *rightAccessoryView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 60, 24)];
+  NSView *rightAccessoryView = [[NSView alloc] initWithFrame:NSMakeRect(0, 0, 60, 28)];
 
-  NSButton *rightButton = [[NSButton alloc] initWithFrame:NSMakeRect(8, 0, 24, 24)];
+  NSButton *rightButton = [[NSButton alloc] initWithFrame:NSMakeRect(8, 2, 24, 24)];
   [rightButton setImage:[NSImage imageWithSystemSymbolName:@"sidebar.right"
                                   accessibilityDescription:nil]];
   [rightButton setBezelStyle:NSBezelStyleRegularSquare];
   [rightButton setBordered:NO];
+  [rightButton setTag:1];
   [rightButton setTarget:delegate];
   [rightButton setAction:@selector(buttonClicked:)];
   [rightAccessoryView addSubview:rightButton];
