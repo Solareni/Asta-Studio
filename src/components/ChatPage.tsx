@@ -5,6 +5,7 @@ import { messages } from "../mock";
 import { ChatItem } from "./types";
 import Markdown from "./Markdown";
 import { LuLightbulb, LuSearch } from "react-icons/lu";
+import useAppStore from "../appStore";
 const renderChatItem = ({
   index,
   style,
@@ -38,6 +39,13 @@ const renderChatItem = ({
 const ChatPage = () => {
   const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
 
+  const {
+    searchSeleted,
+    thinkingSeleted,
+    setSearchSeleted,
+    setThinkingSeleted,
+  } = useAppStore();
+
   useEffect(() => {
     setChatHistory(messages as ChatItem[]);
   }, []);
@@ -59,14 +67,20 @@ const ChatPage = () => {
         />
         <div className="absolute bottom-2 left-2 flex gap-2">
           <button
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
+              searchSeleted ? "text-blue-500" : ""
+            }`}
             title="Search"
+            onClick={() => setSearchSeleted(!searchSeleted)}
           >
             <LuSearch className="w-5 h-5" />
           </button>
           <button
-            className="p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700"
+            className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
+              thinkingSeleted ? "text-blue-500" : ""
+            }`}
             title="Suggestions"
+            onClick={() => setThinkingSeleted(!thinkingSeleted)}
           >
             <LuLightbulb className="w-5 h-5" />
           </button>
