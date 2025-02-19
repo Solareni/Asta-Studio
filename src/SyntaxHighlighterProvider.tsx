@@ -15,7 +15,7 @@ import {
 	HighlighterGeneric,
 } from "shiki";
 
-import { useTheme } from "./ThemeContext";
+import useAppStore from "./appStore";
 interface SyntaxHighlighterContextType {
 	codeToHtml: (code: string, language: string) => Promise<string>;
 }
@@ -26,7 +26,7 @@ const SyntaxHighlighterContext = createContext<
 export const SyntaxHighlighterProvider: React.FC<PropsWithChildren> = ({
 	children,
 }) => {
-	const { theme } = useTheme();
+	const { theme } = useAppStore();
 	const [highlighter, setHighlighter] = useState<HighlighterGeneric<
 		BundledLanguage,
 		BundledTheme

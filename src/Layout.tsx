@@ -1,5 +1,4 @@
 import { useState, useEffect } from "react";
-import { useTheme } from "./ThemeContext";
 import { VirtualList } from "./components/shared/VirtualList";
 import { useDynamicHeight } from "./hooks/useDynamicHeight";
 import { listen } from "@tauri-apps/api/event";
@@ -17,6 +16,7 @@ import {
 } from "react-icons/lu";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { items } from "./mock";
+import useAppStore from "./appStore";
 
 // 定义聊天项的类型
 interface ChatItem {
@@ -79,7 +79,7 @@ const ChatRow = ({
 };
 
 const Siderbar = () => {
-	const { theme, toggleTheme } = useTheme();
+	const { theme, toggleTheme } = useAppStore();
 
 	const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
 
@@ -143,8 +143,7 @@ const Siderbar = () => {
 };
 
 function Layout() {
-	const { theme } = useTheme();
-
+	const { theme } = useAppStore();
 
 	const [sidebarVisible, setSidebarVisible] = useState(true);
 
