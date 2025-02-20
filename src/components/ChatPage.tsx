@@ -6,6 +6,9 @@ import { ChatItem } from "./types";
 import Markdown from "./Markdown";
 import { LuLightbulb, LuSearch } from "react-icons/lu";
 import useAppStore from "../appStore";
+import { useParams } from "react-router-dom";
+import { useTranslation } from "react-i18next";
+
 const renderChatItem = ({
 	index,
 	style,
@@ -29,10 +32,19 @@ const renderChatItem = ({
 				message.role === "assistant" ? " dark:bg-gray-900 bg-gray-200" : ""
 			}`}
 		>
-			<div className="font-bold mb-2">
-				{message.role === "assistant" ? "AI" : "You"}
+			<div className="flex items-start">
+				<img
+					className="mr-2 flex h-8 w-8 rounded-full sm:mr-4"
+					src={
+						message.role === "user"
+							? "https://dummyimage.com/256x256/363536/ffffff&text=U"
+							: "https://dummyimage.com/256x256/354ea1/ffffff&text=A"
+					}
+				/>
+				<div className="flex-1">
+					<Markdown message={message} />
+				</div>
 			</div>
-			<Markdown message={message} />
 		</div>
 	);
 };
@@ -47,37 +59,33 @@ const ChatInput = () => {
 
 	const [message, setMessage] = useState("");
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
+	const containerRef = useRef<HTMLDivElement>(null);
 
 	const getLineCount = () => {
 		const textarea = textareaRef.current;
 		if (!textarea) return 0;
 
-		// Get the computed line height
 		const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-		// Calculate actual lines (including wrapped lines)
 		const lines = Math.floor(textarea.scrollHeight / lineHeight);
 		return lines;
 	};
+
 	const adjustHeight = () => {
 		const textarea = textareaRef.current;
 		if (!textarea) return;
 
 		const lineCount = getLineCount();
-		console.log("Current lines:", lineCount);
-		// Reset height to auto to get the correct scrollHeight
 		textarea.style.height = "auto";
 
 		const minHeight = 72; // min 3 lines (24px * 3)
-		const newHeight = Math.max(textarea.scrollHeight, minHeight);
+		const maxHeight = window.innerHeight / 3;
+		const newHeight = Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight);
 		textarea.style.height = `${newHeight}px`;
-		textarea.style.paddingBottom = `24px`;
-		// onHeightChange(newHeight);
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
 		if (e.key === "Enter") {
 			if (e.ctrlKey) {
-				// Add new line
 				const start = e.currentTarget.selectionStart;
 				const end = e.currentTarget.selectionEnd;
 				const value = e.currentTarget.value;
@@ -85,7 +93,6 @@ const ChatInput = () => {
 					value.substring(0, start) + "\n" + value.substring(end);
 				setMessage(newValue);
 
-				// Force update in next tick to set cursor position after state update
 				setTimeout(() => {
 					if (textareaRef.current) {
 						textareaRef.current.selectionStart = start + 1;
@@ -95,15 +102,12 @@ const ChatInput = () => {
 
 				e.preventDefault();
 			} else if (!e.shiftKey) {
-				// Submit message
 				e.preventDefault();
 				if (message.trim()) {
-					// TODO: Handle message submission
 					console.log("Submit message:", message);
 					setMessage("");
 					if (textareaRef.current) {
-						textareaRef.current.style.height = "72px"; // Reset to 3 lines
-						onHeightChange(72);
+						textareaRef.current.style.height = "72px";
 					}
 				}
 			}
@@ -115,7 +119,7 @@ const ChatInput = () => {
 	}, [message]);
 
 	return (
-		<div className="h-auto relative">
+		<div ref={containerRef} className="relative flex w-full items-end bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
 			<textarea
 				ref={textareaRef}
 				value={message}
@@ -124,9 +128,9 @@ const ChatInput = () => {
 				rows={3}
 				placeholder="Type your message... (Enter to send, Ctrl+Enter for new line)"
 				className="w-full resize-none rounded-lg border border-gray-300 dark:border-gray-600 p-2 pb-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200 min-h-[72px]"
-				style={{ height: "72px", maxHeight: `${window.innerHeight / 3}px` }}
+				style={{ maxHeight: `${window.innerHeight / 3}px` }}
 			/>
-			<div className="absolute bottom-2 left-2 flex gap-2">
+			<div className="absolute bottom-6 left-6 flex gap-2">
 				<button
 					className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
 						searchSeleted
@@ -154,23 +158,44 @@ const ChatInput = () => {
 	);
 };
 
+const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
+	const { t } = useTranslation();
+
+	return (
+		<div className="flex-1 min-h-0 overflow-hidden relative">
+			{chatHistory.length > 0 ? (
+				<VirtualList
+					message={chatHistory}
+					className="absolute inset-0"
+					rowRenderer={renderChatItem}
+				/>
+			) : (
+				<div className="flex h-full items-center justify-center">
+					<p className="text-slate-500">{t("chat.welcome")}</p>
+				</div>
+			)}
+		</div>
+	);
+};
+
 const ChatPage = () => {
+	const { id } = useParams();
 	const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
 
 	useEffect(() => {
-		setChatHistory(messages as ChatItem[]);
-	}, []);
+		if (id) {
+			setChatHistory(messages as ChatItem[]);
+		} else {
+			setChatHistory([]);
+		}
+	}, [id]);
 
 	return (
-		<div className="flex flex-col relative w-full h-screen p-2">
-			<div className="flex-1 overflow-hidden mb-4">
-				<VirtualList
-					message={chatHistory}
-					className="h-full"
-					rowRenderer={renderChatItem}
-				/>
+		<div className="flex h-full w-full flex-col relative">
+			<div className="absolute inset-0 flex flex-col">
+				<ChatArea chatHistory={chatHistory} />
+				<ChatInput />
 			</div>
-			<ChatInput />
 		</div>
 	);
 };
