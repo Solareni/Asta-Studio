@@ -58,25 +58,14 @@ const ChatInput = () => {
 	} = useAppStore();
 
 	const [message, setMessage] = useState("");
+	const [isFocused, setIsFocused] = useState(false);
 	const textareaRef = useRef<HTMLTextAreaElement>(null);
 	const containerRef = useRef<HTMLDivElement>(null);
-
-	const getLineCount = () => {
-		const textarea = textareaRef.current;
-		if (!textarea) return 0;
-
-		const lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-		const lines = Math.floor(textarea.scrollHeight / lineHeight);
-		return lines;
-	};
 
 	const adjustHeight = () => {
 		const textarea = textareaRef.current;
 		if (!textarea) return;
-
-		const lineCount = getLineCount();
 		textarea.style.height = "auto";
-
 		const minHeight = 72; // min 3 lines (24px * 3)
 		const maxHeight = window.innerHeight / 3;
 		const newHeight = Math.min(Math.max(textarea.scrollHeight, minHeight), maxHeight);
@@ -119,40 +108,48 @@ const ChatInput = () => {
 	}, [message]);
 
 	return (
-		<div ref={containerRef} className="relative flex w-full items-end bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
-			<textarea
-				ref={textareaRef}
-				value={message}
-				onChange={(e) => setMessage(e.target.value)}
-				onKeyDown={handleKeyDown}
-				rows={3}
-				placeholder="Type your message... (Enter to send, Ctrl+Enter for new line)"
-				className="w-full resize-none rounded-lg border border-gray-300 dark:border-gray-600 p-2 pb-10 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:bg-gray-800 dark:text-gray-200 min-h-[72px]"
-				style={{ maxHeight: `${window.innerHeight / 3}px` }}
-			/>
-			<div className="absolute bottom-6 left-6 flex gap-2">
-				<button
-					className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
-						searchSeleted
-							? "text-blue-500 dark:text-blue-500"
-							: "text-gray-700 dark:text-gray-100"
-					}`}
-					title="Search"
-					onClick={() => setSearchSeleted(!searchSeleted)}
-				>
-					<LuSearch className="w-5 h-5" />
-				</button>
-				<button
-					className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
-						thinkingSeleted
-							? "text-blue-500 dark:text-blue-500"
-							: "text-gray-700 dark:text-gray-100"
-					}`}
-					title="Suggestions"
-					onClick={() => setThinkingSeleted(!thinkingSeleted)}
-				>
-					<LuLightbulb className="w-5 h-5" />
-				</button>
+		<div ref={containerRef} className="relative w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 p-4">
+			<div 
+				className={`relative rounded-lg border ${
+					isFocused ? 'border-blue-500 ring-2 ring-blue-500' : 'border-gray-300 dark:border-gray-600'
+				} transition-all duration-200`}
+			>
+				<textarea
+					ref={textareaRef}
+					value={message}
+					onChange={(e) => setMessage(e.target.value)}
+					onKeyDown={handleKeyDown}
+					onFocus={() => setIsFocused(true)}
+					onBlur={() => setIsFocused(false)}
+					rows={3}
+					placeholder="Type your message... (Enter to send, Ctrl+Enter for new line)"
+					className="w-full resize-none rounded-t-lg border-0 p-2 focus:outline-none dark:bg-gray-800 dark:text-gray-200 min-h-[72px]"
+					style={{ maxHeight: `${window.innerHeight / 3}px` }}
+				/>
+				<div className="flex gap-2 p-2 border-t-0">
+					<button
+						className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
+							searchSeleted
+								? "text-blue-500 dark:text-blue-500"
+								: "text-gray-700 dark:text-gray-100"
+						}`}
+						title="Search"
+						onClick={() => setSearchSeleted(!searchSeleted)}
+					>
+						<LuSearch className="w-5 h-5" />
+					</button>
+					<button
+						className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
+							thinkingSeleted
+								? "text-blue-500 dark:text-blue-500"
+								: "text-gray-700 dark:text-gray-100"
+						}`}
+						title="Suggestions"
+						onClick={() => setThinkingSeleted(!thinkingSeleted)}
+					>
+						<LuLightbulb className="w-5 h-5" />
+					</button>
+				</div>
 			</div>
 		</div>
 	);
