@@ -123,12 +123,12 @@ const ChatInput = () => {
 					onBlur={() => setIsFocused(false)}
 					rows={3}
 					placeholder="Type your message... (Enter to send, Ctrl+Enter for new line)"
-					className="w-full resize-none rounded-t-lg border-0 p-2 focus:outline-none dark:bg-gray-800 dark:text-gray-200 min-h-[72px]"
+					className="w-full resize-none rounded-t-lg border-0 px-2 py-0 focus:outline-none dark:bg-gray-800 dark:text-gray-200 min-h-[72px]"
 					style={{ maxHeight: `${window.innerHeight / 3}px` }}
 				/>
-				<div className="flex gap-2 p-2 border-t-0">
+				<div className="flex px-1 py-0 border-t-0">
 					<button
-						className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
+						className={`p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
 							searchSeleted
 								? "text-blue-500 dark:text-blue-500"
 								: "text-gray-700 dark:text-gray-100"
@@ -139,7 +139,7 @@ const ChatInput = () => {
 						<LuSearch className="w-5 h-5" />
 					</button>
 					<button
-						className={`p-2 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
+						className={`p-1 rounded hover:bg-gray-200 dark:hover:bg-gray-700 ${
 							thinkingSeleted
 								? "text-blue-500 dark:text-blue-500"
 								: "text-gray-700 dark:text-gray-100"
