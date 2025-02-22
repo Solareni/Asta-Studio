@@ -2,8 +2,8 @@ use std::ffi::c_void;
 
 use once_cell::sync::Lazy;
 use serde::{Deserialize, Serialize};
-use tauri::{WebviewUrl, WebviewWindowBuilder};
 use tauri::{async_runtime::Mutex, AppHandle, Emitter, Manager};
+use tauri::{WebviewUrl, WebviewWindowBuilder};
 
 #[cfg(target_os = "macos")]
 use tauri::TitleBarStyle;
@@ -30,6 +30,8 @@ static RENDER_QUEUE: Lazy<(flume::Sender<RenderCommand>, flume::Receiver<RenderC
 #[cfg_attr(mobile, tauri::mobile_entry_point)]
 pub fn run() {
     tauri::Builder::default()
+        .plugin(tauri_plugin_fs::init())
+        .plugin(tauri_plugin_dialog::init())
         .plugin(tauri_plugin_opener::init())
         .setup(|app| {
             {
@@ -59,8 +61,7 @@ pub fn run() {
                             if tag == 0 {
                                 emit_event(&Event::SidebarControl, &app);
                             }
-
-                        },
+                        }
                     }
                 }
             });
@@ -77,17 +78,14 @@ unsafe extern "C" fn do_something(tag: i32) {
     RENDER_QUEUE.0.send(RenderCommand::FromNative(tag)).unwrap();
 }
 
-
-
 fn emit_event<R: tauri::Runtime>(event: &Event, manager: &AppHandle<R>) {
     let message = serde_json::to_string(event).unwrap();
     manager.emit("emit_event", message).unwrap();
 }
 
-
 #[derive(Debug, Clone, Serialize, Deserialize)]
 #[serde(tag = "type", content = "event")]
 enum Event {
     #[serde(rename = "sidebar_control")]
-    SidebarControl
+    SidebarControl,
 }

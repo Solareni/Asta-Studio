@@ -6,6 +6,7 @@
         "welcome": "Hi! I'm Asta. How can I help you today?",
         "network_search": "Network Search",
         "deep_thinking": "Deep Thinking",
+        "upload_file": "Upload File",
         "placeholder": "Type your message... (Enter to send, Ctrl+Enter for new line)"
     },
     "theme": {

@@ -6,6 +6,7 @@
         "welcome": "你好！我是聊天机器人。今天有什么可以帮你的吗？",
         "network_search": "网络搜索",
         "deep_thinking": "深度思考",
+        "upload_file": "上传文件",
         "placeholder": "请输入你的消息... (Enter 发送, Ctrl+Enter 换行)"
     },
     "theme": {
