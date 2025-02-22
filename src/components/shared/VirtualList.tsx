@@ -6,13 +6,22 @@ interface VirtualListProps {
 	className?: string; // 新增 className prop
 	style?: React.CSSProperties; // 新增 style prop
 	rowRenderer: (props: any) => React.ReactNode; // 新增 rowRenderer prop
-    callbacks?: Record<string, any>; // 新增 callbacks 属性
+	callbacks?: Record<string, any>; // 新增 callbacks 属性
 }
 
 export const VirtualList = forwardRef(
-	({ message, className, style, rowRenderer, callbacks = {} }: VirtualListProps, ref) => {
+	(
+		{
+			message,
+			className,
+			style,
+			rowRenderer,
+			callbacks = {},
+		}: VirtualListProps,
+		ref
+	) => {
 		const listContainerRef = useRef<HTMLDivElement>(null);
-		const [windowHeight, setWindowHeight] = useState(window.innerHeight);
+		const [containerHeight, setContainerHeight] = useState(0);
 		const listRef = useRef<any>(null);
 		const sizeMap = useRef<{ [key: number]: number }>({});
 		const getSize = useCallback((index: number) => {
@@ -25,21 +34,22 @@ export const VirtualList = forwardRef(
 		}, []);
 
 		useEffect(() => {
-			const handleResize = () => {
-				if (listContainerRef.current) {
-					setWindowHeight(listContainerRef.current.clientHeight);
-					setTimeout(() => {
-						if (listRef.current) {
-							listRef.current.resetAfterIndex(0, true);
-						}
-					}, 0);
+			const resizeObserver = new ResizeObserver((entries) => {
+				for (const entry of entries) {
+					setContainerHeight(entry.contentRect.height);
+					if (listRef.current) {
+						listRef.current.resetAfterIndex(0, true);
+					}
 				}
-			};
-			window.addEventListener("resize", handleResize);
-			handleResize();
-			return () => {
-				window.removeEventListener("resize", handleResize);
-			};
+			});
+
+			if (listContainerRef.current) {
+				resizeObserver.observe(listContainerRef.current);
+				// 初始设置高度
+				setContainerHeight(listContainerRef.current.clientHeight);
+			}
+
+			return () => resizeObserver.disconnect();
 		}, []);
 
 		useEffect(() => {
@@ -63,7 +73,7 @@ export const VirtualList = forwardRef(
 			<div ref={listContainerRef} className={className} style={style}>
 				<List
 					ref={listRef}
-					height={windowHeight}
+					height={containerHeight}
 					itemCount={message.length}
 					itemSize={getSize}
 					width="100%"
