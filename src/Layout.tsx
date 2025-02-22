@@ -13,6 +13,7 @@ import {
 	LuMessageCircleMore,
 	LuImage,
 	LuCirclePlus,
+	LuChevronsLeft,
 } from "react-icons/lu";
 import { Link, NavLink, Outlet } from "react-router-dom";
 import { items } from "./mock";
@@ -25,7 +26,7 @@ interface ChatItem {
 	id: string;
 	type: "chat" | "audio" | "image";
 }
-const ChatRow = ({
+const TitleRow = ({
 	index,
 	style,
 	data,
@@ -89,15 +90,18 @@ const Siderbar = () => {
 	}, []);
 
 	return (
-		<div className="w-48 bg-white dark:bg-gray-800 flex flex-col h-screen py-4 shadow-md">
+		<div className="w-48 bg-white border-r border-gray-200 dark:border-gray-700 dark:bg-gray-800 flex flex-col h-screen py-4 shadow-md">
 			{/* 固定顶部区域 */}
 			<div className="flex flex-col flex-none">
 				{/* 项目标志 */}
-				<div className="mb-4 px-3 flex items-center gap-3">
-					<LuAtom className="w-6 h-6 text-blue-500" />
-					<span className="text-lg font-semibold text-gray-900 dark:text-white">
-						AI Chat
-					</span>
+				<div className="mb-4 px-3 flex items-center justify-between">
+					<div className="flex items-center gap-3">
+						<LuAtom className="w-6 h-6 text-blue-500" />
+						<span className="text-lg font-semibold text-gray-900 dark:text-white">
+							Asta
+						</span>
+					</div>
+					<LuChevronsLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
 				</div>
 				<Link to="/chat" className="nav-item mb-2">
 					<LuCirclePlus className="nav-icon" />
@@ -106,10 +110,10 @@ const Siderbar = () => {
 			</div>
 
 			{/* 可滚动的聊天历史记录区域 */}
-			<div className="flex-1 min-h-0">
+			<div className="flex-1 min-h-0 border-t border-gray-200 dark:border-gray-700">
 				<VirtualList
 					className="h-full overflow-auto"
-					rowRenderer={ChatRow}
+					rowRenderer={TitleRow}
 					message={chatHistory}
 				/>
 			</div>

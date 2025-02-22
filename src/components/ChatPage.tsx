@@ -113,7 +113,7 @@ const ChatInput = () => {
 	return (
 		<div
 			ref={containerRef}
-			className="relative w-full bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 py-4"
+			className="relative w-full bg-white dark:bg-gray-800 border-gray-200 dark:border-gray-700 py-4"
 		>
 			<div
 				className={`relative rounded-lg border ${
