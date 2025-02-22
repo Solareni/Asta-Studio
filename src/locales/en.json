@@ -3,6 +3,13 @@
     "user": "User",
     "settings": "Settings",
     "chat": {
-        "welcome": "Hi! I'm Asta. How can I help you today?"
+        "welcome": "Hi! I'm Asta. How can I help you today?",
+        "network_search": "Network Search",
+        "deep_thinking": "Deep Thinking",
+        "placeholder": "Type your message... (Enter to send, Ctrl+Enter for new line)"
+    },
+    "theme": {
+        "light": "Light Mode",
+        "dark": "Dark Mode"
     }
 }

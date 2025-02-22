@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { VirtualList } from "./components/shared/VirtualList";
 import { useDynamicHeight } from "./hooks/useDynamicHeight";
 import { listen } from "@tauri-apps/api/event";
-
+import { useTranslation } from "react-i18next";
 import {
 	LuAtom,
 	LuSun,
@@ -80,7 +80,7 @@ const ChatRow = ({
 
 const Siderbar = () => {
 	const { theme, toggleTheme } = useAppStore();
-
+	const { t } = useTranslation();
 	const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
 
 	useEffect(() => {
@@ -101,7 +101,7 @@ const Siderbar = () => {
 				</div>
 				<Link to="/chat" className="nav-item mb-2">
 					<LuCirclePlus className="nav-icon" />
-					<span className="nav-text">New Chat</span>
+					<span className="nav-text">{t("new_chat")}</span>
 				</Link>
 			</div>
 
@@ -120,22 +120,22 @@ const Siderbar = () => {
 					{theme === "dark" ? (
 						<>
 							<LuSun className="nav-icon" />
-							<span className="nav-text">Light Mode</span>
+							<span className="nav-text">{t("theme.light")}</span>
 						</>
 					) : (
 						<>
 							<LuMoon className="nav-icon" />
-							<span className="nav-text">Dark Mode</span>
+							<span className="nav-text">{t("theme.dark")}</span>
 						</>
 					)}
 				</button>
 				<Link to="/user" className="nav-item">
 					<LuUser className="nav-icon" />
-					<span className="nav-text">Profile</span>
+					<span className="nav-text">{t("user")}</span>
 				</Link>
 				<Link to="/settings" className="nav-item">
 					<LuSettings className="nav-icon" />
-					<span className="nav-text">Settings</span>
+					<span className="nav-text">{t("settings")}</span>
 				</Link>
 			</div>
 		</div>
