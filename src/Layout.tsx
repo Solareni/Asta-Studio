@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { VirtualList } from "./components/shared/VirtualList";
 import { useDynamicHeight } from "./hooks/useDynamicHeight";
-import { listen } from "@tauri-apps/api/event";
 import { useTranslation } from "react-i18next";
 import {
 	LuAtom,
@@ -68,9 +67,7 @@ const TitleRow = ({
 							: "hover:bg-slate-100 dark:hover:bg-slate-800/70"
 					}`}
 		>
-			<div className="flex-none">
-				{getTypeIcon()}
-			</div>
+			<div className="flex-none">{getTypeIcon()}</div>
 
 			<h1 className="text-sm font-medium capitalize truncate text-gray-900 dark:text-white flex-1">
 				{item.title}
@@ -80,7 +77,8 @@ const TitleRow = ({
 };
 
 const Siderbar = () => {
-	const { theme, toggleTheme } = useAppStore();
+	const { theme, toggleTheme, sidebarVisible, setSidebarVisible } =
+		useAppStore();
 	const { t } = useTranslation();
 	const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
 
@@ -101,7 +99,10 @@ const Siderbar = () => {
 							Asta
 						</span>
 					</div>
-					<LuChevronsLeft className="w-5 h-5 text-gray-500 dark:text-gray-400" />
+					<LuChevronsLeft
+						onClick={() => setSidebarVisible(!sidebarVisible)}
+						className="w-5 h-5 text-gray-500 dark:text-gray-400"
+					/>
 				</div>
 				<Link to="/chat" className="nav-item mb-2">
 					<LuCirclePlus className="nav-icon" />
@@ -147,26 +148,16 @@ const Siderbar = () => {
 };
 
 function Layout() {
-	const { theme } = useAppStore();
-
-	const [sidebarVisible, setSidebarVisible] = useState(true);
+	const { theme, sidebarVisible, initialize } = useAppStore();
 
 	useEffect(() => {
-		const unsubscribe = listen<string>("emit_event", (event) => {
-			const payload = JSON.parse(event.payload);
-			switch (payload.type) {
-				case "sidebar_control":
-					setSidebarVisible(prev => !prev);
-					break;
-				default:
-					break;
-			}
-		});
+		const cleanup = initialize();
 
 		return () => {
-			unsubscribe.then((unlisten) => unlisten());
+			cleanup();
 		};
 	}, []);
+
 	return (
 		<div className={theme === "light" ? "" : "dark"}>
 			<div className="flex bg-gray-100 dark:bg-gray-900 min-h-screen">
