@@ -33,26 +33,26 @@ const ChatInput = () => {
 	};
 
 	const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
-		console.log(e.key);
 		if (e.key === "Enter") {
 			if (e.ctrlKey) {
-				const start = e.currentTarget.selectionStart;
-				const end = e.currentTarget.selectionEnd;
-				const value = e.currentTarget.value;
-				const newValue =
-					value.substring(0, start) + "\n" + value.substring(end);
-				setMessage(newValue);
+				const { selectionStart, selectionEnd } = e.currentTarget;
+				const newMessage =
+					message.slice(0, selectionStart) + "\n" + message.slice(selectionEnd);
+				setMessage(newMessage);
+				e.preventDefault();
 
+				// 确保在 DOM 更新后滚动到底部
 				setTimeout(() => {
-					if (textareaRef.current) {
-						textareaRef.current.selectionStart = start + 1;
-						textareaRef.current.selectionEnd = start + 1;
+					const textarea = textareaRef.current;
+					if (textarea) {
+						textarea.scrollTop = textarea.scrollHeight;
 					}
 				}, 0);
-
+			} else {
 				e.preventDefault();
-			} else{
-				console.log("Shift key pressed");
+				// 提交 message
+				e.currentTarget.value = "";
+				setFile(null);
 			}
 		}
 	};
