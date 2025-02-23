@@ -14,6 +14,8 @@ interface AppStore {
 
 	sidebarVisible: boolean;
 	setSidebarVisible: (visible: boolean) => void;
+
+	initialize: () => () => void;
 }
 
 const useAppStore = create<AppStore>((set) => ({

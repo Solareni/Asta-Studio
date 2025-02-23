@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { VirtualList } from "./components/shared/VirtualList";
 import { useDynamicHeight } from "./hooks/useDynamicHeight";
 import { useTranslation } from "react-i18next";
+import { type } from "@tauri-apps/plugin-os";
 import {
 	LuAtom,
 	LuSun,
@@ -81,7 +82,7 @@ const Siderbar = () => {
 		useAppStore();
 	const { t } = useTranslation();
 	const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
-
+	const osType = type() || "windows";
 	useEffect(() => {
 		// 从本地存储中获取聊天历史记录
 		setChatHistory(items as ChatItem[]);
@@ -99,10 +100,12 @@ const Siderbar = () => {
 							Asta
 						</span>
 					</div>
-					<LuChevronsLeft
-						onClick={() => setSidebarVisible(!sidebarVisible)}
-						className="w-5 h-5 text-gray-500 dark:text-gray-400"
-					/>
+					{osType !== "macos" && (
+						<LuChevronsLeft
+							onClick={() => setSidebarVisible(!sidebarVisible)}
+							className="w-5 h-5 text-gray-500 dark:text-gray-400"
+						/>
+					)}
 				</div>
 				<Link to="/chat" className="nav-item mb-2">
 					<LuCirclePlus className="nav-icon" />
