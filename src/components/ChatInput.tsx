@@ -126,13 +126,12 @@ const ChatInput = () => {
 					</button>
 
 					{file && file.length > 0 ? (
-						<div
-							className={`p-1 rounded-2xl hover:bg-gray-200 dark:hover:bg-gray-700 flex items-center gap-1 text-gray-700 dark:text-gray-100
-					}`}
-						>
-							<div className="text-gray-700 dark:text-gray-100 text-sm">
-								{file}
-							</div>
+						<div className="p-1 rounded-2xl flex items-center gap-1">
+							<span className="inline-block h-4 w-1 bg-blue-500 m-0.1 rounded-sm animate-scale-loader [animation-delay:0s]"></span>
+							<span className="inline-block h-4 w-1 bg-blue-500 m-0.1 rounded-sm animate-scale-loader [animation-delay:0.1s]"></span>
+							<span className="inline-block h-4 w-1 bg-blue-500 m-0.1 rounded-sm animate-scale-loader [animation-delay:0.2s]"></span>
+							<span className="inline-block h-4 w-1 bg-blue-500 m-0.1 rounded-sm animate-scale-loader [animation-delay:0.3s]"></span>
+							<span className="inline-block h-4 w-1 bg-blue-500 m-0.1 rounded-sm animate-scale-loader [animation-delay:0.4s]"></span>
 						</div>
 					) : (
 						<button

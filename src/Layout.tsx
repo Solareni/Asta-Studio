@@ -82,7 +82,7 @@ const Siderbar = () => {
 		useAppStore();
 	const { t } = useTranslation();
 	const [chatHistory, setChatHistory] = useState<ChatItem[]>([]);
-	const osType = type() || "windows";
+	const osType = "windows";
 	useEffect(() => {
 		// 从本地存储中获取聊天历史记录
 		setChatHistory(items as ChatItem[]);
