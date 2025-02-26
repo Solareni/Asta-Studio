@@ -1,3 +1,5 @@
+import Anthropic from "@anthropic-ai/sdk";
+
 // 模拟聊天数据
 const items = [
 	{ title: "How to use Tailwind components?", date: "1 Jan", id: "1" },
@@ -52,7 +54,7 @@ const items = [
 
 // 根据id获取chathistory
 // 示例消息数据
-const messages = [
+const messages : Anthropic.Messages.MessageParam[]= [
 	{
 		role: "user",
 		content: "Show me examples of markdown, code, and math formulas",

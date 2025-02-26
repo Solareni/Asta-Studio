@@ -49,7 +49,7 @@ export class OpenAiHandler implements ApiHandler, SingleCompletionHandler {
 				apiVersion: this.options.azureApiVersion || azureOpenAiDefaultApiVersion,
 			})
 		} else {
-			this.client = new OpenAI({ baseURL, apiKey, defaultHeaders: this.options.defaultHeaders })
+			this.client = new OpenAI({ baseURL, apiKey, defaultHeaders: this.options.defaultHeaders, dangerouslyAllowBrowser: true })
 		}
 	}
 

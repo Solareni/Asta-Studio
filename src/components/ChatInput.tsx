@@ -6,7 +6,11 @@ import { open } from "@tauri-apps/plugin-dialog";
 import { readFile, BaseDirectory } from "@tauri-apps/plugin-fs";
 import WaveSurfer from "wavesurfer.js";
 
-const ChatInput = () => {
+const ChatInput = ({
+	onSend,
+}: {
+	onSend: (message: string) => void;
+}) => {
 	const {
 		searchSeleted,
 		thinkingSeleted,
@@ -51,6 +55,8 @@ const ChatInput = () => {
 			} else {
 				e.preventDefault();
 				// 提交 message
+				onSend(message);
+				setMessage("");
 				e.currentTarget.value = "";
 				setFile(null);
 			}

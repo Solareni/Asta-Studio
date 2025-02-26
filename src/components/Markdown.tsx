@@ -11,7 +11,7 @@ import rehypeMathjax from "rehype-mathjax";
 import rehypeRaw from "rehype-raw";
 import remarkGfm from "remark-gfm";
 import remarkMath from "remark-math";
-import { useSyntaxHighlighter } from "../SyntaxHighlighterProvider";
+// import { useSyntaxHighlighter } from "../SyntaxHighlighterProvider";
 
 // import CodeBlock from "./CodeBlock";
 // import ImagePreview from "./ImagePreview";
