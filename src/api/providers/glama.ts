@@ -1,11 +1,14 @@
 import { Anthropic } from "@anthropic-ai/sdk"
 import axios from "axios"
 import OpenAI from "openai"
-import { ApiHandler, SingleCompletionHandler } from "../"
+
 import { ApiHandlerOptions, ModelInfo, glamaDefaultModelId, glamaDefaultModelInfo } from "../../shared/api"
+import { parseApiPrice } from "../../utils/cost"
 import { convertToOpenAiMessages } from "../transform/openai-format"
 import { ApiStream } from "../transform/stream"
-import delay from "delay"
+import { ApiHandler, SingleCompletionHandler } from "../"
+
+const GLAMA_DEFAULT_TEMPERATURE = 0
 
 export class GlamaHandler implements ApiHandler, SingleCompletionHandler {
 	private options: ApiHandlerOptions
@@ -13,10 +16,9 @@ export class GlamaHandler implements ApiHandler, SingleCompletionHandler {
 
 	constructor(options: ApiHandlerOptions) {
 		this.options = options
-		this.client = new OpenAI({
-			baseURL: "https://glama.ai/api/gateway/openai/v1",
-			apiKey: this.options.glamaApiKey,
-		})
+		const baseURL = "https://glama.ai/api/gateway/openai/v1"
+		const apiKey = this.options.glamaApiKey ?? "not-provided"
+		this.client = new OpenAI({ baseURL, apiKey })
 	}
 
 	async *createMessage(systemPrompt: string, messages: Anthropic.Messages.MessageParam[]): ApiStream {
@@ -69,7 +71,7 @@ export class GlamaHandler implements ApiHandler, SingleCompletionHandler {
 		let maxTokens: number | undefined
 
 		if (this.getModel().id.startsWith("anthropic/")) {
-			maxTokens = 8_192
+			maxTokens = this.getModel().info.maxTokens
 		}
 
 		const requestOptions: OpenAI.Chat.ChatCompletionCreateParams = {
@@ -80,7 +82,7 @@ export class GlamaHandler implements ApiHandler, SingleCompletionHandler {
 		}
 
 		if (this.supportsTemperature()) {
-			requestOptions.temperature = 0
+			requestOptions.temperature = this.options.modelTemperature ?? GLAMA_DEFAULT_TEMPERATURE
 		}
 
 		const { data: completion, response } = await this.client.chat.completions
@@ -173,11 +175,11 @@ export class GlamaHandler implements ApiHandler, SingleCompletionHandler {
 			}
 
 			if (this.supportsTemperature()) {
-				requestOptions.temperature = 0
+				requestOptions.temperature = this.options.modelTemperature ?? GLAMA_DEFAULT_TEMPERATURE
 			}
 
 			if (this.getModel().id.startsWith("anthropic/")) {
-				requestOptions.max_tokens = 8192
+				requestOptions.max_tokens = this.getModel().info.maxTokens
 			}
 
 			const response = await this.client.chat.completions.create(requestOptions)
@@ -189,4 +191,45 @@ export class GlamaHandler implements ApiHandler, SingleCompletionHandler {
 			throw error
 		}
 	}
+}
+
+export async function getGlamaModels() {
+	const models: Record<string, ModelInfo> = {}
+
+	try {
+		const response = await axios.get("https://glama.ai/api/gateway/v1/models")
+		const rawModels = response.data
+
+		for (const rawModel of rawModels) {
+			const modelInfo: ModelInfo = {
+				maxTokens: rawModel.maxTokensOutput,
+				contextWindow: rawModel.maxTokensInput,
+				supportsImages: rawModel.capabilities?.includes("input:image"),
+				supportsComputerUse: rawModel.capabilities?.includes("computer_use"),
+				supportsPromptCache: rawModel.capabilities?.includes("caching"),
+				inputPrice: parseApiPrice(rawModel.pricePerToken?.input),
+				outputPrice: parseApiPrice(rawModel.pricePerToken?.output),
+				description: undefined,
+				cacheWritesPrice: parseApiPrice(rawModel.pricePerToken?.cacheWrite),
+				cacheReadsPrice: parseApiPrice(rawModel.pricePerToken?.cacheRead),
+			}
+
+			switch (rawModel.id) {
+				case rawModel.id.startsWith("anthropic/claude-3-7-sonnet"):
+					modelInfo.maxTokens = 16384
+					break
+				case rawModel.id.startsWith("anthropic/"):
+					modelInfo.maxTokens = 8192
+					break
+				default:
+					break
+			}
+
+			models[rawModel.id] = modelInfo
+		}
+	} catch (error) {
+		console.error(`Error fetching Glama models: ${JSON.stringify(error, Object.getOwnPropertyNames(error), 2)}`)
+	}
+
+	return models
 }
