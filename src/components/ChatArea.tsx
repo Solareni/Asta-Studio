@@ -3,10 +3,19 @@ import { VirtualList } from "./shared/VirtualList";
 import Markdown from "./Markdown";
 import { useTranslation } from "react-i18next";
 import { ChatItem } from "./types";
+import { memo, useEffect, useRef } from "react";
+
 const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
   const { t } = useTranslation();
-
+  const listRef = useRef<any>(null);
   const roles = ["user", "assistant"];
+
+  useEffect(() => {
+    if (listRef.current && chatHistory.length > 0) {
+      listRef.current.scrollToItem(chatHistory.length - 1);
+    }
+  }, [chatHistory]);
+
   return (
     <div className="flex-1 min-h-0 overflow-hidden relative">
       {chatHistory.length > 0 ? (
@@ -26,9 +35,10 @@ const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
             ))}
           </div>
           <VirtualList
+            ref={listRef}
             message={chatHistory}
             className="absolute inset-0 top-12"
-            rowRenderer={ChatItemRow}
+            rowRenderer={MemoChatItemRow}
           />
         </>
       ) : (
@@ -39,21 +49,21 @@ const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
     </div>
   );
 };
-const ChatItemRow = ({
-  index,
-  style,
-  data,
-}: {
+
+interface ChatItemRowProps {
   index: number;
   style: React.CSSProperties;
   data: {
     items: ChatItem[];
     setSize: (index: number, size: number) => void;
   };
-}) => {
+}
+
+const ChatItemRow = memo(({ index, style, data }: ChatItemRowProps) => {
   const { items } = data;
   const message = items[index];
   const rowRef = useDynamicHeight<HTMLDivElement>(index, data, message);
+
   return (
     <div
       style={{ ...style, height: "auto" }}
@@ -70,6 +80,7 @@ const ChatItemRow = ({
               ? "https://dummyimage.com/256x256/363536/ffffff&text=U"
               : "https://dummyimage.com/256x256/354ea1/ffffff&text=A"
           }
+          alt={message.role}
         />
         <div className="flex-1">
           <Markdown message={message} />
@@ -77,6 +88,8 @@ const ChatItemRow = ({
       </div>
     </div>
   );
-};
+});
+
+const MemoChatItemRow = ChatItemRow;
 
 export default ChatArea;
