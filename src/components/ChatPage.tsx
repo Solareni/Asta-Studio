@@ -3,13 +3,13 @@ import { messages } from "../mock";
 import { useParams } from "react-router-dom";
 import ChatArea from "./ChatArea";
 import ChatInput from "./ChatInput";
-import { Anthropic } from "@anthropic-ai/sdk";
 import { OpenAiHandler } from "../api/providers/openai";
 import options from "../env";
+import { ChatItem } from "./types";
 const ChatPage = () => {
 	const { id } = useParams();
 	const [chatHistory, setChatHistory] = useState<
-		Anthropic.Messages.MessageParam[]
+		ChatItem[]
 	>([]);
 
 	useEffect(() => {
@@ -23,7 +23,7 @@ const ChatPage = () => {
 	const handler = new OpenAiHandler(options);
 
 	const onSend = (message: string) => {
-		const updatedHistory: Anthropic.Messages.MessageParam[] = [
+		const updatedHistory: ChatItem[] = [
 			...chatHistory,
 			{ role: "user", content: message },
 		];
@@ -38,11 +38,11 @@ const ChatPage = () => {
 			for await (const chunk of stream) {
 				if (chunk.type === "text" || chunk.type === "reasoning") {
 					fullResponse += chunk.text;
-					const updatedResonse: Anthropic.Messages.MessageParam = {
+					const updatedResonse:ChatItem = {
 						role: "assistant",
 						content: fullResponse,
 					};
-					const newChatHistory: Anthropic.Messages.MessageParam[] = [
+					const newChatHistory: ChatItem[] = [
 						...updatedHistory,
 						updatedResonse,
 					];
