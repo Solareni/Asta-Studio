@@ -1,8 +1,7 @@
 import { useState, useEffect } from "react";
-import { VirtualList } from "./components/shared/VirtualList";
-import { useDynamicHeight } from "./hooks/useDynamicHeight";
 import { useTranslation } from "react-i18next";
 import { type } from "@tauri-apps/plugin-os";
+import { Virtuoso } from "react-virtuoso";
 import {
 	LuAtom,
 	LuSun,
@@ -27,20 +26,8 @@ interface ChatItem {
 	id: string;
 	type: "chat" | "audio" | "image";
 }
-const TitleRow = ({
-	index,
-	style,
-	data,
-}: {
-	index: number;
-	style: React.CSSProperties;
-	data: {
-		items: ChatItem[];
-		setSize: (index: number, size: number) => void;
-	};
-}) => {
-	const item = data.items[index];
-	const rowRef = useDynamicHeight<HTMLAnchorElement>(index, data, item);
+const TitleRow = ({ index, items }: { index: number; items: ChatItem[] }) => {
+	const item = items[index];
 
 	const getTypeIcon = () => {
 		switch (item.type) {
@@ -56,10 +43,8 @@ const TitleRow = ({
 
 	return (
 		<NavLink
-			ref={rowRef}
 			to={`/chat/${item.id}`}
 			key={`chat-${item.id}`}
-			style={{ ...style, height: "auto" }}
 			className={({
 				isActive,
 			}) => `flex w-full items-center gap-2 rounded-[20px] px-2 py-3 text-left transition-colors duration-200 
@@ -175,10 +160,12 @@ const Siderbar = () => {
 
 			{/* 可滚动的聊天历史记录区域 */}
 			<div className="flex-1 min-h-0 border-t border-gray-200 dark:border-gray-700">
-				<VirtualList
+				<Virtuoso
 					className="h-full overflow-auto"
-					rowRenderer={TitleRow}
-					message={chatHistory}
+					totalCount={items.length}
+					itemContent={(index) => (
+						<TitleRow index={index} items={items}></TitleRow>
+					)}
 				/>
 			</div>
 
