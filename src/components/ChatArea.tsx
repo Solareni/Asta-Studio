@@ -26,11 +26,23 @@ const Header = () => {
 
 const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
 	const { t } = useTranslation();
+	const listRef = useRef(null);
+  
+  useEffect(() => {
+    if (listRef.current) {
+      listRef.current.scrollToIndex({
+        index: chatHistory.length - 1,
+        behavior: "smooth",
+        align: "end",
+      })
+    }
+  }, [chatHistory]);
 
 	return (
 		<div className="flex-1 min-h-0 overflow-hidden relative">
 			{chatHistory.length > 0 ? (
 				<TableVirtuoso
+					ref={listRef}
 					data={chatHistory}
 					itemContent={(_, message) => <ChatItemRow message={message} />}
 					fixedHeaderContent={() => <Header />}
