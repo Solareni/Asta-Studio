@@ -2,37 +2,39 @@ import Markdown from "./Markdown";
 import { useTranslation } from "react-i18next";
 import { ChatItem } from "./types";
 import { memo, useEffect, useRef } from "react";
-import { Virtuoso } from "react-virtuoso";
+import { TableVirtuoso } from "react-virtuoso";
+
+const Header = () => {
+	const roles = ["user", "assistant"];
+	return (
+		<div className="bg-gray-200 dark:bg-gray-700 flex items-center p-2 border-b border-gray-200 dark:border-gray-700 h-12">
+			{roles.map((role) => (
+				<img
+					key={role}
+					className="mr-2 flex h-8 w-8 rounded-full sm:mr-4"
+					src={
+						role === "user"
+							? "https://dummyimage.com/256x256/363536/ffffff&text=U"
+							: "https://dummyimage.com/256x256/354ea1/ffffff&text=A"
+					}
+					alt={role}
+				/>
+			))}
+		</div>
+	);
+};
+
 const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
 	const { t } = useTranslation();
-	const roles = ["user", "assistant"];
 
 	return (
 		<div className="flex-1 min-h-0 overflow-hidden relative">
 			{chatHistory.length > 0 ? (
-				<>
-					<div className="flex items-center p-2 border-b border-gray-200 dark:border-gray-700 h-12">
-						{roles.map((role) => (
-							<img
-								key={role}
-								className="mr-2 flex h-8 w-8 rounded-full sm:mr-4"
-								src={
-									role === "user"
-										? "https://dummyimage.com/256x256/363536/ffffff&text=U"
-										: "https://dummyimage.com/256x256/354ea1/ffffff&text=A"
-								}
-								alt={role}
-							/>
-						))}
-					</div>
-					<Virtuoso
-						className="absolute inset-0 top-12"
-						totalCount={chatHistory.length}
-						itemContent={(index) => (
-							<ChatItemRow index={index} items={chatHistory}></ChatItemRow>
-						)}
-					/>
-				</>
+				<TableVirtuoso
+					data={chatHistory}
+					itemContent={(_, message) => <ChatItemRow message={message} />}
+					fixedHeaderContent={() => <Header />}
+				/>
 			) : (
 				<div className="flex h-full items-center justify-center">
 					<p className="text-slate-500">{t("chat.welcome")}</p>
@@ -42,14 +44,7 @@ const ChatArea = ({ chatHistory }: { chatHistory: ChatItem[] }) => {
 	);
 };
 
-interface ChatItemRowProps {
-	index: number;
-	items: ChatItem[];
-}
-
-const ChatItemRow = memo(({ index, items }: ChatItemRowProps) => {
-	const message = items[index];
-
+const ChatItemRow = memo(({ message }: { message: ChatItem }) => {
 	return (
 		<div
 			className={`p-2 text-gray-600 dark:text-gray-300 ${

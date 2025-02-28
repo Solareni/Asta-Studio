@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, memo } from "react";
 import { useTranslation } from "react-i18next";
 import { type } from "@tauri-apps/plugin-os";
 import { Virtuoso } from "react-virtuoso";
@@ -26,9 +26,7 @@ interface ChatItem {
 	id: string;
 	type: "chat" | "audio" | "image";
 }
-const TitleRow = ({ index, items }: { index: number; items: ChatItem[] }) => {
-	const item = items[index];
-
+const TitleRow = memo(({ item }: { item: ChatItem }) => {
 	const getTypeIcon = () => {
 		switch (item.type) {
 			case "audio":
@@ -61,7 +59,7 @@ const TitleRow = ({ index, items }: { index: number; items: ChatItem[] }) => {
 			</h1>
 		</NavLink>
 	);
-};
+});
 
 const SidebarSimple = () => {
 	const { theme, toggleTheme, sidebarVisible, setSidebarVisible } =
@@ -162,10 +160,8 @@ const Siderbar = () => {
 			<div className="flex-1 min-h-0 border-t border-gray-200 dark:border-gray-700">
 				<Virtuoso
 					className="h-full overflow-auto"
-					totalCount={items.length}
-					itemContent={(index) => (
-						<TitleRow index={index} items={items}></TitleRow>
-					)}
+					data={items}
+					itemContent={(_, item) => <TitleRow item={item} />}
 				/>
 			</div>
 
